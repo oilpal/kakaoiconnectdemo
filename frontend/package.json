@@ -1,0 +1,19 @@
+{
+  "name": "kakao-demo",
+  "version": "1.0.0",
+  "description": "kakao i connect live demo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "deon",
+    "kakao"
+  ],
+  "author": "jhlee",
+  "license": "ISC",
+  "dependencies": {
+    "@connectlive/connectlive-web-sdk": "^2.2.3",
+    "http-server": "^14.1.1"
+  }
+}
