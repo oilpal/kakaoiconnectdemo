@@ -1,0 +1,51 @@
+<main>
+    <section>
+      <h2>Kakao i Connect Live</h2>
+      <h1>Video Cast</h1>
+  
+      <div id="button-group-host">
+        <h3 class="">Hosting the webinar</h3>
+        <input
+          id="host-room-id"
+          data-id="host"
+          type="text"
+          name="roomId"
+          placeholder="Type room ID"
+        />
+        <div>
+          <button id="connect-host" data-id="host">Host</button>
+          <button id="disconnect-host" data-id="host">Stop</button>
+        </div>
+      </div>
+  
+      <div id="button-group-guest">
+        <h3>Joining the webinar</h3>
+        <input
+          id="guest-room-id"
+          data-id="guest"
+          type="text"
+          name="roomId"
+          placeholder="Type room ID"
+        />
+        <div>
+          <button id="connect-guest" data-id="guest">Join</button>
+          <button id="disconnect-guest" data-id="guest">Leave</button>
+        </div>
+      </div>
+  
+      <div id="status">Disconnected</div>
+  
+      <div id="video-list">
+        <ul id="local-container"></ul>
+        <ul id="remote-container"></ul>
+      </div>
+  
+      <div id="log-list">
+        <h3>Log</h3>
+        <ul id="log">
+          <li>Ready to connect</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+  

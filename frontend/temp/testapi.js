@@ -1,6 +1,18 @@
 // import ConnectLive from "@connectlive/connectlive-web-sdk";
 
 const roomId = 'oilpal-kakao-sample';
+let room = null;
+let remoteParticipants = [];
+let localMedia = null;
+let videoStream = null;
+
+const logConsole = $('#logconsole');
+
+const addLog = (text) => {
+    const logNode = document.createElement('li');
+    logNode.innerHTML = text;
+    logConsole.appendChild(logNode);
+}
 
 // 카카오 라이브에 로그인
 await ConnectLive.signIn({
@@ -9,12 +21,33 @@ await ConnectLive.signIn({
 });
 
 // LocalMedia (로컬미디어) 권한 획득하기
-const localMedia = await ConnectLive.createLocalMedia({video: true, audio: true});
-const videoStream = localMedia.video;
+localMedia = await ConnectLive.createLocalMedia({video: true, audio: true});
 
+// VideoStream
+videoStream = localMedia.video;
+
+// create <video> tag
 const videoTag = videoStream?.attach();
-
 console.log(videoTag);
+
+// Create 'room
+room = ConnectLive.createRoom();
+
+// create Conference
+room.on('participantEntered', (evt) => {
+    addLog(`${evt.remoteParticipant.id} joined`);
+});
+room.on('participantLeft', (evt) => {
+    addLog(`${evt.remoteParticipantId} left`);
+});
+
+// connect to room
+await room.connect(roomId);
+
+// Publish stream
+await room.publish([localMedia]);
+
+// add Local Video Node (render HTML)
 
 const remoteContainer = $('#remote-container');
 
