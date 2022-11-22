@@ -1,4 +1,3 @@
-import ConnectLive from '@connectlive/connectlive-web-sdk';
 import {KakaoConfig, KakaoUrl} from './kakaocfg.js';
 
 let room = null;
