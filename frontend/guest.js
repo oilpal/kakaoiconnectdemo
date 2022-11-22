@@ -129,19 +129,19 @@ await room.connect(roomId);
 
 // add Local Video Node (render HTML)
 // const localContainer = $('#local-container');
-const localContainer = document.querySelector('.local-container');
+// const localContainer = document.querySelector('.local-container');
 
-const videoItem = document.createElement('li');
-videoItem.id = 'local-video-item';
+// const videoItem = document.createElement('li');
+// videoItem.id = 'local-video-item';
 
-const videoHeader = document.createElement('h3');
-videoHeader.innerHTML = `Presenter`;
+// const videoHeader = document.createElement('h3');
+// videoHeader.innerHTML = `Presenter`;
 
-const localVideo = localMedia.video?.attach();
-localVideo.id = 'local-video';
+// const localVideo = localMedia.video?.attach();
+// localVideo.id = 'local-video';
 
-videoItem.appendChild(videoHeader);
-videoItem.appendChild(localVideo);
-localContainer.appendChild(videoItem);
+// videoItem.appendChild(videoHeader);
+// videoItem.appendChild(localVideo);
+// localContainer.appendChild(videoItem);
 
-addLog(localContainer);
+// addLog(localContainer);
