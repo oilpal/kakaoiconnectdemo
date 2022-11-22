@@ -1,13 +1,8 @@
-// import ConnectLive from "@connectlive/connectlive-web-sdk";
-
 import {KakaoConfig, KakaoUrl} from './kakaocfg.js';
-// import kakaocfg from "./kakaocfg";
+// import ConnectLive from './connectlive-web-sdk/connectlive-web-sdk.js'
 
-const roomId = 'oilpal-kakao-sample';
 let room = null;
-// let remoteParticipants = [];
 let localMedia = null;
-let videoStream = null;
 
 const logConsole = $('#logconsole');
 
@@ -20,16 +15,18 @@ const addLog = (text) => {
     ol.appendChild(newLI);
 }
 
-// 카카오 라이브에 로그인
-const ret = await ConnectLive.signIn({
-    serviceId: KakaoConfig.serviceId,
-    serviceSecret: KakaoConfig.serviceSecret
-});
-
-addLog('signIn . ret=' + ret);
-
-// LocalMedia (로컬미디어) 권한 획득하기
+const roomId = KakaoConfig.roomId;
 try {
+
+    // 카카오 라이브에 로그인
+    const ret = await ConnectLive.signIn({
+        serviceId: KakaoConfig.serviceId,
+        serviceSecret: KakaoConfig.serviceSecret
+    });
+    
+    addLog('signIn . ret=' + ret);
+
+    // LocalMedia (로컬미디어) 권한 획득하기
     localMedia = await ConnectLive.createLocalMedia({video: true, audio: true});
     addLog('createLocalMedia()' + localMedia);
 }
