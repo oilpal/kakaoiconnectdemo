@@ -54,7 +54,6 @@ room.on('connected', (evt) => {
    // connectButton.innerHTML = 'connected'
     evt.remoteParticipants.forEach((member) => {
         addLog('user: ' + member.id + ' is entered');
-       addLog
     });
 });
 
@@ -64,7 +63,12 @@ room.on('participantEntered', (evt) => {
 
 room.on('participantLeft', (evt) => {
     addLog('user: ' + evt.remoteParticipantId + ' is left.');
-})
+});
+
+room.on('localVideoPublished', (evt) => {
+	const localVideo = evt.localVideo;
+	addLog('localVideo.streamId = ' + localVideo.streamId);
+});
 
 // Connect to room ( conference )
 await room.connect(roomId);
