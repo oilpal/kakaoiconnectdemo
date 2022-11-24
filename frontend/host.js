@@ -2,6 +2,7 @@ import {KakaoConfig, KakaoUrl} from './kakaocfg.js';
 
 let room = null;
 const roomId = KakaoConfig.roomId;
+let localMedia = null;
 
 // const logConsole = $('#logconsole');
 const buttonConnect = document.querySelector('#connect-host');
@@ -25,10 +26,12 @@ const resetLog = () => {
 
 const activateButton = () => {
     buttonConnect.disabled = false;
+    buttonDisconnect.disabled = true;
 }
 
 const disableButton = () => {
     buttonConnect.disabled = true;
+    buttonDisconnect.disabled = false;
 }
 
 const createConferenceHost = (room) => {
@@ -74,6 +77,11 @@ const addLocalVideoNode = (localMedia) => {
     addLog(localContainer);
 }
 
+const removeLocalVideoNode = () => {
+    const videoItem = document.querySelector('#local-video-item');
+    videoItem?.remove();
+}
+
 const connectConference = async (event) => {
 
     resetLog();
@@ -90,7 +98,7 @@ const connectConference = async (event) => {
         addLog('signIn . ret=' + ret);
 
         // LocalMedia (로컬미디어) 권한 획득하기
-        const localMedia = await ConnectLive.createLocalMedia({video: true, audio: true});
+        localMedia = await ConnectLive.createLocalMedia({video: true, audio: true});
         addLog('createLocalMedia()' + localMedia);
 
         // 채팅방 접속/이벤트 처리하기
@@ -130,11 +138,17 @@ const disconnectConference = (event) => {
 
         if(!room) {
             throw new Error('No Conference to Stop');
-
-            disConnect.conference();
-            disConnect.user();
-            disConnect.buttonStatus();
         }
+
+        disConnect.conference();
+
+        if (localMedia) {
+            disConnect.localMedia();
+        }
+
+        disConnect.user();
+        disConnect.buttonStatus();
+        
     }
     catch(err) {
         addLog('disconnectConference() error. ' + err);
@@ -143,7 +157,14 @@ const disconnectConference = (event) => {
 
 const disConnect = {
     conference() {
-        room?.disconect();
+        try {
+            room?.disconnect();
+        }
+        catch(err) {
+            console.log(err);
+            throw new Error('room.disconnect() error');
+        }
+        
         addLog('Conference Disconnected');
     },
 
