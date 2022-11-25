@@ -15,7 +15,7 @@ const createConferenceGuest = (room) => {
 
             disConnect.conference();
             disConnect.user();
-            
+            disConnect.buttonStatus();
             addLog('No webinar starts yet');
         }
     
@@ -159,13 +159,21 @@ const connectConference = async (event) => {
     catch(err) {
         addLog('connectConference error=' + err);
 
+        console.error(error);
+        disConnect.conference();
+        disConnect.localMedia();
+        disConnect.remoteParticipants();
+        disConnect.user();
+        disConnect.buttonStatus();
+        // changeStatus('Failed to Connect');
+        alert('Failed to Start Service');
 
     }
 }
 
 const disconnectConference = () => {
   try {
-    changeStatus('Disconnecting...');
+    // changeStatus('Disconnecting...');
 
     if (!room || !roomId) throw new Error('No Conference to Stop');
 
@@ -196,7 +204,7 @@ const disConnect = {
     },
     buttonStatus() {
         activateButton();
-        changeStatus('Disconnected');
+        // changeStatus('Disconnected');
     },
 };
 

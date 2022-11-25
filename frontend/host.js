@@ -125,6 +125,9 @@ const connectConference = async (event) => {
         addLog('Participant Showed');
     }
     catch(err) {
+
+        console.error(err);
+
         disConnect.conference();
         disConnect.localMedia();
         disConnect.user();
