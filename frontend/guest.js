@@ -8,72 +8,6 @@ let remoteParticipants = []; // guest 쪽에서 필요함.
 const buttonConnect = document.querySelector('#connect-host');
 const buttonDisconnect = document.querySelector('#disconnect-host');
 
-const addLog = (text) => {
-    const newLI = document.createElement('li');
-    newLI.innerHTML = text;
-    // logConsole.appendChild(logNode);
-
-    let ol = document.getElementById('logconsole');
-    ol.appendChild(newLI);
-}
-
-const resetLog = () => {
-    let ol = document.getElementById('logconsole');
-    while(ol.firstChild) {
-        ol.removeChild(ol.lastChild);
-    }
-}
-
-const activateButton = () => {
-    buttonConnect.disabled = false;
-    buttonDisconnect.disabled = true;
-}
-
-const disableButton = () => {
-    buttonConnect.disabled = true;
-    buttonDisconnect.disabled = false;
-}
-
-const addRemoteVideoNode = (videos) => {
-    const remoteContainer =document.querySelector('.remote-container');
-
-    videos.forEach((video) => {
-        const videoItem = document.createElement('li');
-        videoItem.id = video.participantId;
-
-        const videoHeader = document.createElement('h3');
-        videoHeader.innerHTML = 'Presenter';
-        addLog('Join the webinar');
-
-        const remoteVideo = video.attach();
-        remoteVideo.id = 'remote-video';
-
-        videoItem.appendChild(videoHeader);
-        videoItem.appendChild(remoteVideo);
-        remoteContainer.appendChild(videoItem);
-    });
-}
-
-const disConnect = {
-    conference() {
-        room?.disconnect();
-        addLog('Conference Disconnected');
-    },
-    remoteParticipants() {
-        remoteParticipants = [];
-        removeRemoteVideoAll();
-        addLog('Participants Cleared');
-    },
-    user() {
-        ConnectLive.signOut();
-        addLog('User Signed Out');
-    },
-    buttonStatus() {
-        activateButton();
-        changeStatus('Disconnected');
-    },
-};
-
 const createConferenceGuest = (room) => {
     room.on('connected', async (evt) => {
         // connectButton.innerHTML = 'connected'
@@ -107,13 +41,13 @@ const createConferenceGuest = (room) => {
     room.on('remoteVideoPublished', async (evt) => {
         const videos = await room.subscribe([evt.remoteVideo.videoId]);
     
-        if (video.length) {
+        if (videos.length) {
             const preJoinedParticipant = remoteParticipants.find(
                 (item) => item.participant.id === evt.remoteParticipant.id
             );
     
             if (preJoinedParticipant) {
-                preJoinedParticipant.videos = 
+                preJoinedParticipant.videos =
                     preJoinedParticipant.videos.concat(videos);
             }
         }
@@ -121,27 +55,76 @@ const createConferenceGuest = (room) => {
         addRemoteVideoNode(videos);
     });
     
-    room.on('remoteVideoUnpublished', async (evt) => {
-    
+    room.on('remoteVideoUnpublished',  (evt) => {
         const participantToRemove = remoteParticipants.find(
             (item) => item.participant.id === evt.remoteParticipant.id
         );
-    
+
         if (participantToRemove) {
             participantToRemove.videos = participantToRemove.videos.filter(
                 (video) => video.videoId !== evt.remoteVideo.videoId
             );
-    
-            disConnect.conference();
-            disConnect.remoteParticipants();
-            disConnect.user();
-            activateButton();
-    
-            addLog(`${evt.remoteParticipant.id} Left`);
         }
+
+        disConnect.conference();
+        disConnect.remoteParticipants();
+        disConnect.user();
+        activateButton();
+            // changeStatus('Disconnected');
+        addLog(`${evt.remoteParticipant.id} Left`);
     });
-    
 };
+
+const activateButton = () => {
+    buttonConnect.disabled = false;
+    buttonDisconnect.disabled = true;
+}
+
+const disableButton = () => {
+    buttonConnect.disabled = true;
+    buttonDisconnect.disabled = false;
+}
+
+const addRemoteVideoNode = (videos) => {
+    const remoteContainer =document.querySelector('.remote-container');
+
+    videos.forEach((video) => {
+        const videoItem = document.createElement('li');
+        videoItem.id = video.participantId;
+
+        const videoHeader = document.createElement('h3');
+        videoHeader.innerHTML = 'Presenter';
+        addLog('Join the webinar');
+
+        const remoteVideo = video.attach();
+        remoteVideo.id = 'remote-video';
+
+        videoItem.appendChild(videoHeader);
+        videoItem.appendChild(remoteVideo);
+        remoteContainer.appendChild(videoItem);
+    });
+};
+
+const removeRemoteVideoAll = () => {
+  const remoteContainer = document.querySelector('.remote-container');
+  remoteContainer.innerHTML = '';
+};
+
+const addLog = (text) => {
+    const newLI = document.createElement('li');
+    newLI.innerHTML = text;
+    // logConsole.appendChild(logNode);
+
+    let ol = document.getElementById('logconsole');
+    ol.appendChild(newLI);
+}
+
+const resetLog = () => {
+    let ol = document.getElementById('logconsole');
+    while(ol.firstChild) {
+        ol.removeChild(ol.lastChild);
+    }
+}
 
 const connectConference = async (event) => {
 
@@ -181,29 +164,41 @@ const connectConference = async (event) => {
 }
 
 const disconnectConference = () => {
+  try {
+    changeStatus('Disconnecting...');
 
+    if (!room || !roomId) throw new Error('No Conference to Stop');
+
+    disConnect.conference();
+
+    disConnect.remoteParticipants();
+    disConnect.user();
+    disConnect.buttonStatus();
+  } catch (error) {
+    console.error(error);
+    // changeStatus('Failed to Disconnect');
+  }
 };
 
-
-
-// add Local Video Node (render HTML)
-// const localContainer = $('#local-container');
-// const localContainer = document.querySelector('.local-container');
-
-// const videoItem = document.createElement('li');
-// videoItem.id = 'local-video-item';
-
-// const videoHeader = document.createElement('h3');
-// videoHeader.innerHTML = `Presenter`;
-
-// const localVideo = localMedia.video?.attach();
-// localVideo.id = 'local-video';
-
-// videoItem.appendChild(videoHeader);
-// videoItem.appendChild(localVideo);
-// localContainer.appendChild(videoItem);
-
-// addLog(localContainer);
+const disConnect = {
+    conference() {
+        room?.disconnect();
+        addLog('Conference Disconnected');
+    },
+    remoteParticipants() {
+        remoteParticipants = [];
+        removeRemoteVideoAll();
+        addLog('Participants Cleared');
+    },
+    user() {
+        ConnectLive.signOut();
+        addLog('User Signed Out');
+    },
+    buttonStatus() {
+        activateButton();
+        changeStatus('Disconnected');
+    },
+};
 
 buttonConnect.onclick = connectConference;
 buttonDisconnect.onclick = disconnectConference;
