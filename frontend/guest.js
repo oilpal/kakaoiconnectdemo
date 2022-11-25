@@ -26,6 +26,13 @@ const createConferenceGuest = (room) => {
             if (unsubscribedVideos.length) {
                 const videoIds = unsubscribedVideos.map((video) => video.getVideoId());
                 videos = await room.subscribe(videoIds);
+
+                videoIds.forEach( (videoID) => {
+                    addLog(`[connected] remoteParticipant ${participant.id}. videoid ${videoID} try subscribing`);
+                });
+                videos.forEach( (video) => {
+                    addLog(`[connected] remoteParticipant ${participant.id}. video.id ${video.videoId} subscribed o.k`);
+                });
             }
     
             remoteParticipants.push({participant, videos});
@@ -50,6 +57,11 @@ const createConferenceGuest = (room) => {
                 preJoinedParticipant.videos =
                     preJoinedParticipant.videos.concat(videos);
             }
+
+            addLog(`[remoteVideoPublished] user ${evt.remoteParticipant.id} remoteVideoPublished`);
+            videos.forEach((video) => {
+                addLog(`[remoteVideoPublished] video.participantId ${video.participantId} video ${video.videoId} published`);
+            });
         }
     
         addRemoteVideoNode(videos);
@@ -72,6 +84,12 @@ const createConferenceGuest = (room) => {
         activateButton();
             // changeStatus('Disconnected');
         addLog(`${evt.remoteParticipant.id} Left`);
+    });
+
+    room.on('remoteVideoStateChanged', (evt)=>{
+        //param.remoteParticipant
+        //param.remoteVideo
+        addLog('remoteVideoStateChanged entered');
     });
 };
 
@@ -102,6 +120,8 @@ const addRemoteVideoNode = (videos) => {
         videoItem.appendChild(videoHeader);
         videoItem.appendChild(remoteVideo);
         remoteContainer.appendChild(videoItem);
+
+        addLog(`[addRemoteVideoNode] participant ${video.participantId} video ${video.videoId}`);
     });
 };
 
@@ -148,18 +168,22 @@ const connectConference = async (event) => {
             throw new Error('Failed to create room');
         }
 
-        //
         createConferenceGuest(room);
 
         addLog('Conference Guest Created');
 
         // Connect to room ( conference )
         await room.connect(roomId);
+
+        if (room.localParticipant) {
+            addLog(`me ${room.localParticipant.id} entered`);
+        }
+        
     }
     catch(err) {
         addLog('connectConference error=' + err);
 
-        console.error(error);
+        console.log(error);
         disConnect.conference();
         disConnect.localMedia();
         disConnect.remoteParticipants();

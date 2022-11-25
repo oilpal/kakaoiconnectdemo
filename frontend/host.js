@@ -114,6 +114,10 @@ const connectConference = async (event) => {
         // Connect to room ( conference )
         await room.connect(roomId);
 
+        if (room.localParticipant) {
+            addLog(`me ${room.localParticipant.id} entered`);
+        }
+
         if (localMedia) {
             // Publish stream
             await room.publish([localMedia]);
@@ -136,22 +140,23 @@ const connectConference = async (event) => {
     }
 }
 
-const disconnectConference = (event) => {
+const disconnectConference = async (event) => {
     try {
 
         if(!room) {
             throw new Error('No Conference to Stop');
         }
 
-        disConnect.conference();
+        await disConnect.conference();
 
         if (localMedia) {
             disConnect.localMedia();
         }
 
-        disConnect.user();
-        disConnect.buttonStatus();
-        
+        setTimeout(() => {
+            disConnect.user();
+            disConnect.buttonStatus();
+        }, 1000);
     }
     catch(err) {
         addLog('disconnectConference() error. ' + err);
@@ -159,9 +164,14 @@ const disconnectConference = (event) => {
 }
 
 const disConnect = {
-    conference() {
+    async conference() {
         try {
-            room?.disconnect();
+            if (localMedia) {
+                await room?.unpublish([localMedia]);
+                addLog('Video unpublished');
+            }
+
+            await room?.disconnect();
         }
         catch(err) {
             console.log(err);
@@ -172,6 +182,7 @@ const disConnect = {
     },
 
     localMedia() {
+
         localMedia?.stop();
         localMedia = null;
 
