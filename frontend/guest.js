@@ -116,6 +116,7 @@ const addRemoteVideoNode = (videos) => {
 
         const remoteVideo = video.attach();
         remoteVideo.id = 'remote-video';
+        remoteVideo.setAttribute("style", "position: fixed; left: 0; top: 0; right: 0; bottom: 0; min-width: 100%; min-height: 100%;");
 
         videoItem.appendChild(videoHeader);
         videoItem.appendChild(remoteVideo);
